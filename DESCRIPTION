@@ -1,13 +1,10 @@
 Package: pbcm
 Title: Parametric Bootstrap Cross-fitting Method
 Version: 0.0.0.9000
-Authors@R: 
-    person(given = "Henri",
-           family = "Kauhanen",
-           role = c("aut", "cre"),
-           email = "henri@henr.in")
-Description: What the package does (one paragraph).
+Author: Henri Kauhanen <henri@henr.in>
+Maintainer: Henri Kauhanen <henri@henr.in>
+Description: Implements both data-informed and data-uninformed versions of the Parametric Bootstrap Cross-fitting Method (PBCM) for binary model selection, as well as some utility functions.
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.0
+RoxygenNote: 6.1.1
