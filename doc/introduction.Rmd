@@ -34,12 +34,12 @@ The data-informed version of the procedure looks like the following. Given an em
 
 1. Fit both models to $D$, and make note of the empirical value $\Delta GoF_e$.
 1. Repeat for $M$ Monte Carlo iterations:
-   1. Form a non-parametric bootstrap $D*$ of $D$ by sampling data points from $D$ with replacement.
-   1. Fit both models to $D*$, resulting in two *model realizations*.
-   1. Generate synthetic data from the realization of model 1; call these synthetic data $D*|1$.
-   1. Generate synthetic data from the realization of model 2; call these synthetic data $D*|2$.
-   1. Fit both models to $D*|1$ and calculate $\Delta GoF | 1$, the difference in goodness of fit given model 1 as the generator.
-   1. Fit both models to $D*|2$ and calculate $\Delta GoF | 2$, the difference in goodness of fit given model 2 as the generator.
+  1. Form a non-parametric bootstrap $D^*$ of $D$ by sampling data points from $D$ with replacement.
+  1. Fit both models to $D^*$, resulting in two *model realizations*.
+  1. Generate synthetic data from the realization of model 1; call these synthetic data $D*^|1$.
+  1. Generate synthetic data from the realization of model 2; call these synthetic data $D^*|2$.
+  1. Fit both models to $D^*|1$ and calculate $\Delta GoF | 1$, the difference in goodness of fit given model 1 as the generator.
+  1. Fit both models to $D^*|2$ and calculate $\Delta GoF | 2$, the difference in goodness of fit given model 2 as the generator.
 1. Examine the distributions $\Delta GoF | 1$ and $\Delta GoF | 2$ and decide on a decision criterion (e.g. $k$ nearest neighbours clustering; see below). Compare the empirical value $\Delta GoF_e$ against this criterion and decide in favour of model 1 or model 2.
 
 The data-uninformed procedure differs from this in that the model realizations are decided by an *a priori* selection of model parameters rather than being estimated from empirical data.
