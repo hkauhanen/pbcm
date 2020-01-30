@@ -29,7 +29,7 @@ Suppose we have the following data:
 
 ```{r mockdata}
 x <- seq(from=0, to=1, length.out=100)
-mockdata <- data.frame(x=x, y=x^2 + rnorm(100, 0, 0.5))
+mockdata <- data.frame(x=x, y=x + rnorm(100, 0, 0.5))
 library(ggplot2)
 g <- ggplot(mockdata, aes(x=x, y=y)) + geom_point()
 print(g)
