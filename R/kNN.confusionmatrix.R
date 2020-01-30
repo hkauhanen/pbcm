@@ -1,11 +1,11 @@
 #' Confusion Matrices through k Nearest Neighbours Classification
 #'
-#' Computes confusion matrices (one for each value of k) using k-NN classification from the results of two parametric bootstraps, one of these being labelled a holdout set and tested against the other one.
+#' Computes confusion matrices (one for each value of \eqn{k}) using \eqn{k}-NN classification from the results of two parametric bootstraps, one of these being labelled a holdout set and tested against the other one.
 #'
-#' The function takes each DeltaGoF value from \code{df.holdout}, compares it against the DeltaGoF distributions in \code{df}, and decides based on k-NN classification. By convention, we take model 2 as the null hypothesis and model 1 as the alternative. Hence a false positive, for instance, means the situation where model 2 generated the data but the decision was in favour of model 1.
+#' The function takes each \code{DeltaGoF} value from \code{df.holdout}, compares it against the \code{DeltaGoF} distributions in \code{df}, and decides based on \eqn{k}-NN classification. By convention, we take model 2 as the null hypothesis and model 1 as the alternative. Hence a false positive, for instance, means the situation where model 2 generated the data but the decision was in favour of model 1.
 #'
-#' @param df Data frame output by \code{\link{pbcm.di}} of \code{\link{pbcm.du}}
-#' @param df.holdout Data frame output by \code{\link{pbcm.di}} of \code{\link{pbcm.du}}
+#' @param df Data frame output by \code{\link{pbcm.di}} or \code{\link{pbcm.du}}
+#' @param df.holdout Data frame output by \code{\link{pbcm.di}} or \code{\link{pbcm.du}}
 #' @param k Number of neighbours to consider in k-NN classification; may be a vector of integers
 #' @param ties Which way to break ties in k-NN classification (see \code{\link{kNN.classification}})
 #' @param verbose If \code{TRUE}, prints a progress bar and issues warnings
@@ -24,6 +24,7 @@
 #' In addition to these columns, each argument that was passed via \code{genargs1} and \code{genargs2} to \code{\link{pbcm.di}} or \code{\link{pbcm.du}} to generate \code{df.holdout} is included as a column of its own.
 #' @author Henri Kauhanen
 #' @seealso \code{\link{kNN.classification}}, \code{\link{pbcm.di}}, \code{\link{pbcm.du}}
+#' @example examples/ex.kNN.confusionmatrix.R
 #'
 #' @export
 kNN.confusionmatrix <- function(df,
@@ -76,12 +77,13 @@ kNN.confusionmatrix <- function(df,
     }
   }
 
+  if (1==0) {
   # add genargs to out frame
   genargs2 <- names(df.holdout)[grep(names(df.holdout), pattern="^model2_")]
   genargs1 <- names(df.holdout)[grep(names(df.holdout), pattern="^model1_")]
   if (length(genargs2) != 0) {
     for (i in length(genargs2):1) {
-      argval <- unique(df[[genargs2[[i]]]])
+      argval <- unique(df.holdout[[genargs2[[i]]]])
       argval <- argval[!is.na(argval)]
       out <- cbind(rep(argval, nrow(out)), out)
       names(out)[1] <- genargs2[i]
@@ -89,11 +91,12 @@ kNN.confusionmatrix <- function(df,
   }
   if (length(genargs1) != 0) {
     for (i in length(genargs1):1) {
-      argval <- unique(df[[genargs1[[i]]]])
+      argval <- unique(df.holdout[[genargs1[[i]]]])
       argval <- argval[!is.na(argval)]
       out <- cbind(rep(argval, nrow(out)), out)
       names(out)[1] <- genargs1[i]
     }
+  }
   }
 
   # return

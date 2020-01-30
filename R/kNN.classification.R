@@ -1,8 +1,8 @@
 #' k Nearest Neighbours Classification
 #'
-#' Carry out k Nearest Neighbours (k-NN) classification on the results of a parametric boostrap.
+#' Carry out \eqn{k} Nearest Neighbours (\eqn{k}-NN) classification on the results of a parametric boostrap.
 #'
-#' Calculated the cumulative distance (sum of squared differences) of \code{DeltaGoF.emp} to both \code{DeltaGoF} distributions found in \code{df} (i.e. one with model 1 as generator and one with model 2 as generator), taking into account the \code{k} nearest neighbours only. Decides in favour of model 1 if this cumulative distance to the model 1 distribution is smaller than than the distance to model 2, and vice versa. If distances are equal, decision is made according to the \code{ties} argument.
+#' Calculates the cumulative distance (sum of squared differences) of \code{DeltaGoF.emp} to both \code{DeltaGoF} distributions found in \code{df} (i.e. one with model 1 as generator and one with model 2 as generator), taking into account the \code{k} nearest neighbours only. Decides in favour of model 1 if this cumulative distance to the model 1 distribution is smaller than than the distance to model 2, and vice versa. If distances are equal, decision is made according to the \code{ties} argument.
 #'
 #' @param df Results of bootstrap; the output of \code{\link{pbcm.di}} or \code{\link{pbcm.du}}
 #' @param DeltaGoF.emp Empirical value of goodness of fit (e.g. from \code{\link{empirical.GoF}})
@@ -12,7 +12,8 @@
 #' @return A data frame containing the computed distances and decisions, one row per each value of \code{k}
 #' @seealso \code{\link{empirical.GoF}}, \code{\link{pbcm.di}}, \code{\link{pbcm.du}}
 #' @author Henri Kauhanen
-#' @references Schultheis, H. & Singhaniya, A. (2015) Decision criteria for model comparison using the parametric bootstrap cross-fitting method. \emph{Cognitive Systems Research}, 33, 100-121.
+#' @references Schultheis, H. & Singhaniya, A. (2015) Decision criteria for model comparison using the parametric bootstrap cross-fitting method. \emph{Cognitive Systems Research}, 33, 100–121.
+#' @example examples/ex.kNN.classification.R
 #'
 #' @export
 kNN.classification <- function(df,
@@ -28,7 +29,7 @@ kNN.classification <- function(df,
     if (verbose) warning("k-NN classification failed - empty df or DeltaGoF.emp argument")
     return(out)
   }
-  else if (k < 1) {
+  else if (min(k) < 1) {
     if (verbose) warning("Value of k must be a positive integer")
     return(out)
   }
