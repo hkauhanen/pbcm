@@ -13,6 +13,6 @@ URL: https://github.com/hkauhanen/pbcm
 BugReports: https://github.com/hkauhanen/pbcm/issues
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
     ggplot2
 VignetteBuilder: knitr

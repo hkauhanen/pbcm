@@ -1,6 +1,3 @@
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-
 # pbcm
 
 pbcm is an R package that implements both data-informed and data-uninformed versions of the Parametric Bootstrap Cross-fitting Method (PBCM; Wagenmakers et al. 2004), a general-purpose technique for binary model selection. Some auxiliary routines, such as decision through *k* nearest neighbours classification (Schultheis & Singhaniya 2015), are also implemented.
@@ -15,7 +12,7 @@ install.packages("pbcm")
 
 ## Help!?
 
-For basic usage notes, consult the vignette [An introduction to pbcm](https://htmlpreview.github.io/?https://github.com/hkauhanen/pbcm/blob/dev/vignettes/introduction.html). Each function provided by the package is also supplied with examples. The package manual is available [here in PDF format](pbcm.pdf).
+For basic usage notes, consult the vignette [An introduction to pbcm](https://htmlpreview.github.io/?https://github.com/hkauhanen/pbcm/blob/dev/doc/introduction.html). Each function provided by the package is also supplied with examples. The package manual is available [here in PDF format](pbcm.pdf).
 
 ## But what *is* this PBCM?
 
@@ -23,7 +20,7 @@ See Wagenmakers et al. (2004).
 
 ## I've found a bug
 
-Please file a new [issue](issues).
+Please file a new [issue](https://github.com/hkauhanen/pbcm/issues).
 
 ## References
 
