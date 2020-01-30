@@ -35,7 +35,7 @@ mockdata <- data.frame(x=x, y=x + rnorm(100, 0, 0.5))
 
 and we wish to find out which of the following two models best explains these data:
 
-* Model 1: $y = ax + \epsilon$
+* Model 1: $latex y = ax + \epsilon$
 * Model 2: $y = ax^2 + \epsilon$
 
 where $\epsilon$ is some Gaussian noise.
