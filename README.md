@@ -77,12 +77,12 @@ Here, `args1` and `args2` hold arguments passed to `myfitfun`, while `genargs1` 
 ```r
 head(myboot)
 #>   model1_p model2_p rep generator     GoF1     GoF2   DeltaGoF
-#> 1        1       NA   1    model1 26.66185 28.37756 -1.7157118
-#> 2        1       NA   2    model1 28.58196 29.04322 -0.4612682
-#> 3        1       NA   3    model1 23.22502 22.85188  0.3731393
-#> 4        1       NA   4    model1 26.98613 27.99137 -1.0052453
-#> 5        1       NA   5    model1 24.29595 25.13197 -0.8360243
-#> 6        1       NA   6    model1 24.45492 24.35391  0.1010160
+#> 1        1       NA   1    model1 21.77000 23.49642 -1.7264248
+#> 2        1       NA   2    model1 29.24174 29.86216 -0.6204199
+#> 3        1       NA   3    model1 24.19192 26.05298 -1.8610550
+#> 4        1       NA   4    model1 28.12335 30.07455 -1.9512002
+#> 5        1       NA   5    model1 23.12629 26.41142 -3.2851276
+#> 6        1       NA   6    model1 17.33502 20.07795 -2.7429362
 ```
 
 We can easily produce a nice plot of the `DeltaGoF` distributions:
@@ -102,9 +102,18 @@ Since the definition of `DeltaGoF` is `GoF1 - GoF2`, and since we have defined `
 emp <- pbcm::empirical.GoF(mockdata, fun1=myfitfun, fun2=myfitfun, args1=list(p=1), args2=list(p=2))
 print(emp)
 #>       GoF1     GoF2  DeltaGoF
-#> 1 20.63991 23.53877 -2.898859
+#> 1 26.97882 32.13715 -5.158331
 ```
 
+This suggests that model 1 is the true generator, since the empirical value of `DeltaGoF` would appear to be closer to that distribution. To get a more quantitative angle on this, we can use e.g. *k* nearest neighbours (*k*-NN) classification to decide the issue:
+
+
+```r
+kNN.classification(df=myboot, DeltaGoF.emp=emp$DeltaGoF, k=10)
+#> Error in kNN.classification(df = myboot, DeltaGoF.emp = emp$DeltaGoF, : could not find function "kNN.classification"
+```
+
+Comparing the empirical value of `DeltaGoF` to its 10 nearest neighbours in both bootstrap distributions, the distance to the model 1 distribution is smaller, hence model 1 is selected.
 
 
 ## References

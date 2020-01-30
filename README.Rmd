@@ -91,6 +91,13 @@ emp <- pbcm::empirical.GoF(mockdata, fun1=myfitfun, fun2=myfitfun, args1=list(p=
 print(emp)
 ```
 
+This suggests that model 1 is the true generator, since the empirical value of `DeltaGoF` would appear to be closer to that distribution. To get a more quantitative angle on this, we can use e.g. *k* nearest neighbours (*k*-NN) classification to decide the issue:
+
+```{r kNN}
+kNN.classification(df=myboot, DeltaGoF.emp=emp$DeltaGoF, k=10)
+```
+
+Comparing the empirical value of `DeltaGoF` to its 10 nearest neighbours in both bootstrap distributions, the distance to the model 1 distribution is smaller, hence model 1 is selected.
 
 
 ## References
