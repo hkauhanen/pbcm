@@ -31,7 +31,8 @@ Suppose we have the following data:
 ```{r mockdata}
 x <- seq(from=0, to=1, length.out=100)
 mockdata <- data.frame(x=x, y=x + rnorm(100, 0, 0.5))
-g <- ggplot2::ggplot(mockdata, aes(x=x, y=y)) + ggplot2::geom_point()
+library(ggplot2)
+g <- ggplot(mockdata, aes(x=x, y=y)) + geom_point()
 print(g)
 ```
 
@@ -44,7 +45,7 @@ where `E` is some Gaussian noise.
 
 The first thing to do is to define our own routine for fitting these models. We could use a dedicated routine for each model, but because of the simplicity of the example and the obvious parallels between the two models, we're in fact going to parameterize a single function. We're going to use R's implementation of nonlinear least squares, `nls`, here:
 
-```r
+```{r myfitfun}
 myfitfun <- function(data, p) {
   res <- nls(y~a*x^p, data, start=list(a=1.1))
   list(a=coef(res), GoF=deviance(res))
@@ -55,7 +56,7 @@ Note that `myfitfun` takes a (mandatory) `data` argument which is used to pass t
 
 To generate the parametric bootstrap, we need another function that generates synthetic data based on a model parameterization:
 
-```r
+```{r mygenfun}
 mygenfun <- function(model, p) {
   x <- seq(from=0, to=1, length.out=100)
   y <- model$a*x^p + rnorm(100, 0, 0.5)
@@ -67,20 +68,21 @@ This function takes a mandatory `model` argument, which is used to pass around m
 
 Now we're set to actually run the bootstrap:
 
-```r
+```{r pbcm}
 myboot <- pbcm::pbcm.di(data=mockdata, fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun, genfun2=mygenfun, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(p=1), genargs2=list(p=2))
 ```
 
 Here, `args1` and `args2` hold arguments passed to `myfitfun`, while `genargs1` and `genargs2` hold arguments passed to `mygenfun`. Let's take a glimpse at the result:
 
-```{r}
+```{r myboot}
 head(myboot)
 ```
 
 We can easily produce a nice plot of the `DeltaGoF` distributions:
 
-```r
-ggplot2::ggplot(myboot, aes(x=DeltaGoF, fill=generator)) + ggplot2::geom_density(alpha=0.5)
+```{r mybootplot}
+g <- ggplot(myboot, aes(x=DeltaGoF, fill=generator)) + geom_density(alpha=0.5)
+print(g)
 ```
 
 
