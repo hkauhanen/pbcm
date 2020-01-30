@@ -18,7 +18,6 @@ knitr::opts_chunk$set(
 
 [pbcm](https://github.com/hkauhanen/pbcm) is an R package that implements both data-informed and data-uninformed versions of the Parametric Bootstrap Cross-fitting Method (PBCM; Wagenmakers et al. 2004), a general-purpose technique for binary model selection. Some auxiliary routines, such as decision through *k* nearest neighbours classification (Schultheis & Singhaniya 2015), are also implemented.
 
-<!--
 ## Installation
 
 You can install the released version of pbcm from [CRAN](https://CRAN.R-project.org) with:
@@ -26,7 +25,26 @@ You can install the released version of pbcm from [CRAN](https://CRAN.R-project.
 ``` r
 install.packages("pbcm")
 ```
--->
+
+## Overview of parametric bootstrap cross-fitting
+
+Given two models (henceforth, model 1 and model 2), the PBCM generates synthetic data from each model and cross-fits the models to these synthetic data. The result is two distributions (one with each model as the generator) of the statistic $\Delta GoF = GoF_1 - GoF_2$, where $GoF_i$ is the goodness of fit of model $i$. The model parameters may be determined from empirical data, in which case we talk of the *data-informed* PBCM, or specified a priori, in which case what we have at hand is the *data-uninformed* PBCM.
+
+The data-informed version of the procedure looks like the following. Given an empirical dataset $D$ (adapted from Wagenmakers et al. 2004):
+
+1. Fit both models to $D$, and make note of the empirical value $\Delta GoF_e$.
+1. Repeat for $M$ Monte Carlo iterations:
+   1. Form a non-parametric bootstrap $D*$ of $D$ by sampling data points from $D$ with replacement.
+   1. Fit both models to $D*$, resulting in two *model realizations*.
+   1. Generate synthetic data from the realization of model 1; call these synthetic data $D*|1$.
+   1. Generate synthetic data from the realization of model 2; call these synthetic data $D*|2$.
+   1. Fit both models to $D*|1$ and calculate $\Delta GoF | 1$, the difference in goodness of fit given model 1 as the generator.
+   1. Fit both models to $D*|2$ and calculate $\Delta GoF | 2$, the difference in goodness of fit given model 2 as the generator.
+1. Examine the distributions $\Delta GoF | 1$ and $\Delta GoF | 2$ and decide on a decision criterion (e.g. $k$ nearest neighbours clustering; see below). Compare the empirical value $\Delta GoF_e$ against this criterion and decide in favour of model 1 or model 2.
+
+The data-uninformed procedure differs from this in that the model realizations are decided by an *a priori* selection of model parameters rather than being estimated from empirical data.
+
+See Wagenmakers et al. (2004) for further details.
 
 
 ## A basic (silly) example
