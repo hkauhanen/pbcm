@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 ```
 # pbcm
 
-pbcm is an R package that implements both data-informed and data-uninformed versions of the Parametric Bootstrap Cross-fitting Method (PBCM), a general-purpose technique for binary model selection. Some auxiliary routines, such as decision through k nearest neighbours classification, are also implemented.
+pbcm is an R package that implements both data-informed and data-uninformed versions of the Parametric Bootstrap Cross-fitting Method (PBCM; Wagenmakers et al. 2004), a general-purpose technique for binary model selection. Some auxiliary routines, such as decision through *k* nearest neighbours classification (Schultheis & Singhaniya 2015), are also implemented.
 
 ## Installation
 
@@ -24,7 +24,23 @@ You can install the released version of pbcm from [CRAN](https://CRAN.R-project.
 install.packages("pbcm")
 ```
 
-## Example
+## Basic usage
+
+Suppose we have the following data:
+
+``` r
+x <- seq(from=0, to=1, length.out=100)
+mockdata <- data.frame(x=x, y=x + rnorm(100, 0, 0.5))
+```
+
+and we wish to find out which of the following two models best explains these data:
+
+* Model 1: $y = ax + \epsilon$
+* Model 2: $y = ax^2 + \epsilon$
+
+where $\epsilon$ is some Gaussian noise.
+
+
 
 This is a basic example which shows you how to solve a common problem:
 
@@ -50,5 +66,7 @@ In that case, don't forget to commit and push the resulting figure files, so the
 
 
 ## References
+
+Schultheis, H. & Singhaniya, A. (2015) Decision criteria for model comparison using the parametric bootstrap cross-fitting method. *Cognitive Systems Research*, 33, 100–121.
 
 Wagenmakers, E.-J., Ratcliff, R., Gomez, P. & Iverson, G. J. (2004) Assessing model mimicry using the parametric bootstrap. *Journal of Mathematical Psychology*, 48(1), 28–50.
