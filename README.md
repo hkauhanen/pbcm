@@ -1,6 +1,8 @@
+<!--
 ---
 output: github_document
 ---
+-->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -77,12 +79,12 @@ Here, `args1` and `args2` hold arguments passed to `myfitfun`, while `genargs1` 
 ```r
 head(myboot)
 #>   model1_p model2_p rep generator     GoF1     GoF2  DeltaGoF
-#> 1        1       NA   1    model1 25.50409 29.66643 -4.162338
-#> 2        1       NA   2    model1 21.92206 25.30344 -3.381374
-#> 3        1       NA   3    model1 26.99881 30.53478 -3.535976
-#> 4        1       NA   4    model1 30.70698 30.35088  0.356103
-#> 5        1       NA   5    model1 26.98884 29.70388 -2.715038
-#> 6        1       NA   6    model1 28.60470 29.86541 -1.260714
+#> 1        1       NA   1    model1 23.45904 24.83311 -1.374074
+#> 2        1       NA   2    model1 26.62514 29.28760 -2.662461
+#> 3        1       NA   3    model1 29.90476 31.07734 -1.172576
+#> 4        1       NA   4    model1 22.71312 28.82541 -6.112288
+#> 5        1       NA   5    model1 24.94802 27.67818 -2.730165
+#> 6        1       NA   6    model1 25.18297 26.35922 -1.176251
 ```
 
 We can easily produce a nice plot of the `DeltaGoF` distributions:
@@ -102,7 +104,7 @@ Since the definition of `DeltaGoF` is `GoF1 - GoF2`, and since we have defined `
 emp <- pbcm::empirical.GoF(mockdata, fun1=myfitfun, fun2=myfitfun, args1=list(p=1), args2=list(p=2))
 print(emp)
 #>       GoF1     GoF2  DeltaGoF
-#> 1 24.58233 28.36655 -3.784218
+#> 1 23.40029 25.75858 -2.358292
 ```
 
 This suggests that model 1 is the true generator, since the empirical value of `DeltaGoF` would appear to be closer to that distribution. To get a more quantitative angle on this, we can use e.g. *k* nearest neighbours (*k*-NN) classification to decide the issue:
@@ -111,7 +113,7 @@ This suggests that model 1 is the true generator, since the empirical value of `
 ```r
 pbcm::kNN.classification(df=myboot, DeltaGoF.emp=emp$DeltaGoF, k=10)
 #>    k dist_model1 dist_model2 decision
-#> 1 10   0.2604175    123.8638   model1
+#> 1 10   0.4477701    28.36902   model1
 ```
 
 Comparing the empirical value of `DeltaGoF` to its 10 nearest neighbours in both bootstrap distributions, the distance to the model 1 distribution is smaller, hence model 1 is selected.
@@ -122,10 +124,10 @@ We can even try different values of *k* to see if that has any effect on the dec
 ```r
 pbcm::kNN.classification(df=myboot, DeltaGoF.emp=emp$DeltaGoF, k=c(1, 10, 50, 100))
 #>     k  dist_model1 dist_model2 decision
-#> 1   1 1.354383e-04    7.387804   model1
-#> 2  10 2.604175e-01  123.863771   model1
-#> 3  50 3.894636e+01 1150.537659   model1
-#> 4 100 4.344938e+02 3586.392521   model1
+#> 1   1 1.173415e-03    0.434248   model1
+#> 2  10 4.477701e-01   28.369023   model1
+#> 3  50 1.822919e+01  497.942666   model1
+#> 4 100 2.459495e+02 1987.769285   model1
 ```
 
 
