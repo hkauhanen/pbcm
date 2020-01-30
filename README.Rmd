@@ -28,17 +28,59 @@ install.packages("pbcm")
 
 Suppose we have the following data:
 
-``` r
+```r
 x <- seq(from=0, to=1, length.out=100)
 mockdata <- data.frame(x=x, y=x + rnorm(100, 0, 0.5))
+ggplot2::ggplot(mockdata, aes(x=x, y=y)) + ggplot2::geom_point()
 ```
 
-and we wish to find out which of the following two models best explains these data:
+Suppose we wish to find out which of the following two models best explains these data:
 
-* Model 1: $latex y = ax + \epsilon$
-* Model 2: $y = ax^2 + \epsilon$
+* Model 1: `y = a*x + E`
+* Model 2: `y = a*x^2 + E`
 
-where $\epsilon$ is some Gaussian noise.
+where `E` is some Gaussian noise.
+
+The first thing to do is to define our own routine for fitting these models. We could use a dedicated routine for each model, but because of the simplicity of the example and the obvious parallels between the two models, we're in fact going to parameterize a single function. We're going to use R's implementation of nonlinear least squares, `nls`, here:
+
+```r
+myfitfun <- function(data, p) {
+  res <- nls(y~a*x^p, data, start=list(a=1.1))
+  list(a=coef(res), GoF=deviance(res))
+}
+```
+
+Note that `myfitfun` takes a (mandatory) `data` argument which is used to pass the data the models are fit to, and that it returns a list, one of whose elements holds the goodness of fit (`GoF`).
+
+To generate the parametric bootstrap, we need another function that generates synthetic data based on a model parameterization:
+
+```r
+mygenfun <- function(model, p) {
+  x <- seq(from=0, to=1, length.out=100)
+  y <- model$a*x^p + rnorm(100, 0, 0.5)
+  data.frame(x=x, y=y)
+}
+```
+
+This function takes a mandatory `model` argument, which is used to pass around model realizations (the output of the `myfitfun` function).
+
+Now we're set to actually run the bootstrap:
+
+```r
+myboot <- pbcm::pbcm.di(data=mockdata, fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun, genfun2=mygenfun, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(p=1), genargs2=list(p=2))
+```
+
+Here, `args1` and `args2` hold arguments passed to `myfitfun`, while `genargs1` and `genargs2` hold arguments passed to `mygenfun`. Let's take a glimpse at the result:
+
+```r
+head(myboot)
+```
+
+We can easily produce a nice plot of the `DeltaGoF` distributions:
+
+```r
+ggplot2::ggplot(myboot, aes(x=DeltaGoF, fill=generator)) + ggplot2::geom_density(alpha=0.5)
+```
 
 
 
