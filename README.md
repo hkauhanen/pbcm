@@ -21,10 +21,14 @@ install.packages("pbcm")
 
 Suppose we have the following data:
 
+
 ```r
 x <- seq(from=0, to=1, length.out=100)
 mockdata <- data.frame(x=x, y=x + rnorm(100, 0, 0.5))
-ggplot2::ggplot(mockdata, aes(x=x, y=y)) + ggplot2::geom_point()
+g <- ggplot2::ggplot(mockdata, aes(x=x, y=y)) + ggplot2::geom_point()
+#> Error in aes(x = x, y = y): could not find function "aes"
+print(g)
+#> Error in print(g): object 'g' not found
 ```
 
 Suppose we wish to find out which of the following two models best explains these data:
@@ -65,8 +69,10 @@ myboot <- pbcm::pbcm.di(data=mockdata, fun1=myfitfun, fun2=myfitfun, genfun1=myg
 
 Here, `args1` and `args2` hold arguments passed to `myfitfun`, while `genargs1` and `genargs2` hold arguments passed to `mygenfun`. Let's take a glimpse at the result:
 
+
 ```r
 head(myboot)
+#> Error in head(myboot): object 'myboot' not found
 ```
 
 We can easily produce a nice plot of the `DeltaGoF` distributions:
