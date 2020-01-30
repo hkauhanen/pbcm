@@ -1,9 +1,3 @@
-<!--
----
-output: github_document
----
--->
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 
@@ -11,6 +5,7 @@ output: github_document
 
 pbcm is an R package that implements both data-informed and data-uninformed versions of the Parametric Bootstrap Cross-fitting Method (PBCM; Wagenmakers et al. 2004), a general-purpose technique for binary model selection. Some auxiliary routines, such as decision through *k* nearest neighbours classification (Schultheis & Singhaniya 2015), are also implemented.
 
+<!--
 ## Installation
 
 You can install the released version of pbcm from [CRAN](https://CRAN.R-project.org) with:
@@ -18,6 +13,8 @@ You can install the released version of pbcm from [CRAN](https://CRAN.R-project.
 ``` r
 install.packages("pbcm")
 ```
+-->
+
 
 ## Basic usage
 
@@ -78,13 +75,13 @@ Here, `args1` and `args2` hold arguments passed to `myfitfun`, while `genargs1` 
 
 ```r
 head(myboot)
-#>   model1_p model2_p rep generator     GoF1     GoF2  DeltaGoF
-#> 1        1       NA   1    model1 23.45904 24.83311 -1.374074
-#> 2        1       NA   2    model1 26.62514 29.28760 -2.662461
-#> 3        1       NA   3    model1 29.90476 31.07734 -1.172576
-#> 4        1       NA   4    model1 22.71312 28.82541 -6.112288
-#> 5        1       NA   5    model1 24.94802 27.67818 -2.730165
-#> 6        1       NA   6    model1 25.18297 26.35922 -1.176251
+#>   model1_p model2_p rep generator     GoF1     GoF2   DeltaGoF
+#> 1        1       NA   1    model1 29.78358 30.66719 -0.8836032
+#> 2        1       NA   2    model1 23.19477 25.25275 -2.0579877
+#> 3        1       NA   3    model1 23.78050 27.96290 -4.1823970
+#> 4        1       NA   4    model1 29.07336 32.04524 -2.9718760
+#> 5        1       NA   5    model1 25.73710 28.49222 -2.7551193
+#> 6        1       NA   6    model1 25.66593 28.38585 -2.7199180
 ```
 
 We can easily produce a nice plot of the `DeltaGoF` distributions:
@@ -103,8 +100,8 @@ Since the definition of `DeltaGoF` is `GoF1 - GoF2`, and since we have defined `
 ```r
 emp <- pbcm::empirical.GoF(mockdata, fun1=myfitfun, fun2=myfitfun, args1=list(p=1), args2=list(p=2))
 print(emp)
-#>       GoF1     GoF2  DeltaGoF
-#> 1 23.40029 25.75858 -2.358292
+#>       GoF1     GoF2   DeltaGoF
+#> 1 23.39446 24.26343 -0.8689749
 ```
 
 This suggests that model 1 is the true generator, since the empirical value of `DeltaGoF` would appear to be closer to that distribution. To get a more quantitative angle on this, we can use e.g. *k* nearest neighbours (*k*-NN) classification to decide the issue:
@@ -113,7 +110,7 @@ This suggests that model 1 is the true generator, since the empirical value of `
 ```r
 pbcm::kNN.classification(df=myboot, DeltaGoF.emp=emp$DeltaGoF, k=10)
 #>    k dist_model1 dist_model2 decision
-#> 1 10   0.4477701    28.36902   model1
+#> 1 10   0.1502513    5.528051   model1
 ```
 
 Comparing the empirical value of `DeltaGoF` to its 10 nearest neighbours in both bootstrap distributions, the distance to the model 1 distribution is smaller, hence model 1 is selected.
@@ -123,11 +120,11 @@ We can even try different values of *k* to see if that has any effect on the dec
 
 ```r
 pbcm::kNN.classification(df=myboot, DeltaGoF.emp=emp$DeltaGoF, k=c(1, 10, 50, 100))
-#>     k  dist_model1 dist_model2 decision
-#> 1   1 1.173415e-03    0.434248   model1
-#> 2  10 4.477701e-01   28.369023   model1
-#> 3  50 1.822919e+01  497.942666   model1
-#> 4 100 2.459495e+02 1987.769285   model1
+#>     k  dist_model1  dist_model2 decision
+#> 1   1 2.139888e-04 4.500289e-03   model1
+#> 2  10 1.502513e-01 5.528051e+00   model1
+#> 3  50 1.929081e+01 2.199585e+02   model1
+#> 4 100 3.178388e+02 1.164866e+03   model1
 ```
 
 
