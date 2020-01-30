@@ -33,7 +33,7 @@ Given two models (henceforth, model 1 and model 2), the PBCM generates synthetic
 The data-informed version of the procedure looks like the following. Given an empirical dataset $D$ (adapted from Wagenmakers et al. 2004):
 
 1. Fit both models to $D$, and make note of the empirical value $\Delta GoF_e$.
-1. Repeat for $M$ Monte Carlo iterations:
+1. Repeat for some number of iterations:
     1. Form a non-parametric bootstrap $D^*$ of $D$ by sampling data points from $D$ with replacement.
     1. Fit both models to $D^*$, resulting in two *model realizations*.
     1. Generate synthetic data from the realization of model 1; call these synthetic data $D^*|1$.
@@ -127,6 +127,52 @@ We can even try different values of *k* to see if that has any effect on the dec
 
 ```{r kNNmultiple}
 pbcm::kNN.classification(df=myboot, DeltaGoF.emp=emp$DeltaGoF, k=c(1, 10, 50, 100))
+```
+
+
+## Data-uninformed bootstrap: a parameter sweep
+
+Suppose we know that parameter values in the region $a \in [0.5, 1.5]$ are particularly empirically meaningful for our two models. We can use the data-uninformed version of PBCM to examine the two models' confusability within this region of the parameter space by conducting a systematic sweep.
+
+This time, the data generating function need not rely on a model but rather on a specific value of the model parameter. Hence we make a new version of this function:
+
+```{r mygenfun2}
+mygenfun.du <- function(a, p) {
+  x <- seq(from=0, to=1, length.out=100)
+  y <- a*x^p + rnorm(100, 0, 0.5)
+  data.frame(x=x, y=y)
+}
+```
+
+The model fitting function, `myfitfun`, needs no modifications.
+
+To run a data-uninformed PBCM analysis on a particular value of $a$, we can do the following:
+
+```{r pbcm.du}
+myboot <- pbcm::pbcm.du(fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun.du, genfun2=mygenfun.du, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(a=1.0, p=1), genargs2=list(a=1.0, p=2))
+head(myboot)
+```
+
+A parameter sweep is easy to accomplish using R's `lapply`:
+
+```{r sweep}
+sweep <- lapply(X=seq(from=0.5, to=1.5, by=0.1),
+                FUN=function(X) {
+                  pbcm::pbcm.du(fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun.du, genfun2=mygenfun.du, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(a=X, p=1), genargs2=list(a=X, p=2))
+                })
+```
+
+The output of `lapply` is a list, so let's gather this into a data frame for convenience and add a column that indicates the value of the $a$ parameter:
+
+```{r rbind}
+sweep <- do.call(rbind, sweep)
+sweep$parameter <- ifelse(is.na(sweep$model1_a), sweep$model2_a, sweep$model1_a)
+```
+
+Finally, to visualize the results of the sweep:
+```{r sweepvis}
+g <- ggplot(sweep, aes(x=DeltaGoF, fill=generator)) + geom_density(alpha=0.5) + facet_wrap(.~parameter)
+print(g)
 ```
 
 
