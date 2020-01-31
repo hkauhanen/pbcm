@@ -51,11 +51,11 @@ mygenfun.du <- function(a, p) {
   data.frame(x=x, y=y)
 }
 
-## ----pbcm.du-------------------------------------------------------------
+## ----pbcm.du, results='hide'---------------------------------------------
 myboot <- pbcm::pbcm.du(fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun.du, genfun2=mygenfun.du, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(a=1.0, p=1), genargs2=list(a=1.0, p=2))
 head(myboot)
 
-## ----sweep---------------------------------------------------------------
+## ----sweep, results='hide'-----------------------------------------------
 sweep <- lapply(X=seq(from=0.5, to=1.5, by=0.1),
                 FUN=function(X) {
                   pbcm::pbcm.du(fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun.du, genfun2=mygenfun.du, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(a=X, p=1), genargs2=list(a=X, p=2))
