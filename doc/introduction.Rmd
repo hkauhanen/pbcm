@@ -170,7 +170,7 @@ sweep$parameter <- ifelse(is.na(sweep$model1_a), sweep$model2_a, sweep$model1_a)
 ```
 
 Finally, to visualize the results of the sweep:
-```{r sweepvis}
+```{r sweepvis, out.width='100%'}
 g <- ggplot(sweep, aes(x=DeltaGoF, fill=generator)) + geom_density(alpha=0.5) + facet_wrap(.~parameter)
 print(g)
 ```

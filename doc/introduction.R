@@ -65,7 +65,7 @@ sweep <- lapply(X=seq(from=0.5, to=1.5, by=0.1),
 sweep <- do.call(rbind, sweep)
 sweep$parameter <- ifelse(is.na(sweep$model1_a), sweep$model2_a, sweep$model1_a)
 
-## ----sweepvis------------------------------------------------------------
+## ----sweepvis, out.width='100%'------------------------------------------
 g <- ggplot(sweep, aes(x=DeltaGoF, fill=generator)) + geom_density(alpha=0.5) + facet_wrap(.~parameter)
 print(g)
 
