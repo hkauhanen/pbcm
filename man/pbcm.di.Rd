@@ -6,7 +6,8 @@
 \usage{
 pbcm.di(data, fun1, fun2, genfun1, genfun2, reps, args1 = NULL,
   args2 = NULL, genargs1 = NULL, genargs2 = NULL,
-  nonparametric_bootstrap = TRUE, verbose = TRUE, GoFname = "GoF")
+  print_genargs = TRUE, nonparametric_bootstrap = TRUE,
+  verbose = TRUE, GoFname = "GoF")
 }
 \arguments{
 \item{data}{Data frame}
@@ -29,6 +30,8 @@ pbcm.di(data, fun1, fun2, genfun1, genfun2, reps, args1 = NULL,
 
 \item{genargs2}{List of arguments passed to \code{genfun2}}
 
+\item{print_genargs}{Whether the generator argument values should be included in output (see Details)}
+
 \item{nonparametric_bootstrap}{Whether \code{data} should be nonparametrically bootstrapped before the parametric bootstrap}
 
 \item{verbose}{If \code{TRUE}, a progress bar is printed to the console and warnings are issued}
@@ -44,13 +47,13 @@ A data frame in long format with the following columns:
 \item{\code{GoF2}}{Goodness of fit of model 2}
 \item{\code{DeltaGoF}}{Equals \code{GoF1 - GoF2}}
 }
-In addition to these columns, each argument in the lists \code{genargs1} and \code{genargs2} is included as a column of its own, with the argument's name prefixed by \code{"model1_"} or \code{"model2_"}.
+In addition to these columns, if \code{print_genargs == TRUE}, each argument in the lists \code{genargs1} and \code{genargs2} is included as a column of its own, with the argument's name prefixed by \code{"genargs1_"} or \code{"genargs2_"}.
 }
 \description{
 The data-informed Parametric Bootstrap Cross-fitting Method (PBCM) generates synthetic data from two models of a phenomenon parameterized by fits to an empirical dataset, and then cross-fits the models to these data. The result is two distributions of the goodness of fit metric \eqn{\Delta GoF = GoF_1 - GoF_2}, where \eqn{GoF_1} is the fit of model 1 and \eqn{GoF_2} the fit of model 2.
 }
 \details{
-Functions \code{fun1} and \code{fun2} must take \code{data} as an argument in addition to any arguments specified in \code{args1} and \code{args2}. \code{fun1} and \code{fun2} must return a list with at least one element carrying the goodness of fit; the name of this element may be specified through the \code{GoFname} argument, by default the string \code{"GoF"} is assumed. Functions \code{genfun1} and \code{genfun2} must take an argument named \code{model} (the output of \code{fun1} and \code{fun2}).
+Functions \code{fun1} and \code{fun2} must take \code{data} as an argument in addition to any arguments specified in \code{args1} and \code{args2}. Moreover, these functions must return a list with at least one element carrying the goodness of fit; the name of this element may be specified through the \code{GoFname} argument, by default the string \code{"GoF"} is assumed. Functions \code{genfun1} and \code{genfun2} must take an argument named \code{model} (the output of \code{fun1} and \code{fun2}).
 }
 \examples{
 x <- seq(from=0, to=1, length.out=100)
@@ -72,7 +75,7 @@ pbcm.di(data=mockdata, fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun,
         genargs1=list(p=1), genargs2=list(p=2))
 }
 \references{
-Wagenmakers, E.-J., Ratcliff, R., Gomez, P. & Iverson, G. J. (2004) Assessing model mimicry using the parametric bootstrap. \emph{Journal of Mathematical Psychology}, 48(1), 28–50.
+Wagenmakers, E.-J., Ratcliff, R., Gomez, P. & Iverson, G. J. (2004) Assessing model mimicry using the parametric bootstrap. \emph{Journal of Mathematical Psychology}, 48(1), 28–50. \url{https://doi.org/10.1016/j.jmp.2003.11.004}
 }
 \author{
 Henri Kauhanen

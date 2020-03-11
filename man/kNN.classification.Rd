@@ -52,7 +52,7 @@ emp <- empirical.GoF(mockdata, fun1=myfitfun, fun2=myfitfun,
 kNN.classification(df=pb, DeltaGoF.emp=emp$DeltaGoF, k=c(10, 20))
 }
 \references{
-Schultheis, H. & Singhaniya, A. (2015) Decision criteria for model comparison using the parametric bootstrap cross-fitting method. \emph{Cognitive Systems Research}, 33, 100–121.
+Schultheis, H. & Singhaniya, A. (2015) Decision criteria for model comparison using the parametric bootstrap cross-fitting method. \emph{Cognitive Systems Research}, 33, 100–121. \url{https://doi.org/10.1016/j.cogsys.2014.09.003}
 }
 \seealso{
 \code{\link{empirical.GoF}}, \code{\link{pbcm.di}}, \code{\link{pbcm.du}}

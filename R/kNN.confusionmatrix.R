@@ -8,6 +8,7 @@
 #' @param df.holdout Data frame output by \code{\link{pbcm.di}} or \code{\link{pbcm.du}}
 #' @param k Number of neighbours to consider in k-NN classification; may be a vector of integers
 #' @param ties Which way to break ties in k-NN classification (see \code{\link{kNN.classification}})
+#' @param print_genargs Should the generator arguments of the holdout distribution be included in the output? (See Details)
 #' @param verbose If \code{TRUE}, prints a progress bar and issues warnings
 #' @return A data frame with the following columns:
 #' \describe{
@@ -21,7 +22,7 @@
 #' \item{\code{alpha}}{Type I error (false positive) rate; equal to \code{FP} divided by \code{N}}
 #' \item{\code{beta}}{Type II error (false negative) rate; equal to \code{FN} divided by \code{P}}
 #' }
-#' In addition to these columns, each argument that was passed via \code{genargs1} and \code{genargs2} to \code{\link{pbcm.di}} or \code{\link{pbcm.du}} to generate \code{df.holdout} is included as a column of its own.
+#' In addition to these columns, if \code{print_genargs == TRUE}, each argument that was passed via \code{genargs1} and \code{genargs2} to \code{\link{pbcm.di}} or \code{\link{pbcm.du}} to generate \code{df.holdout} is included as a column of its own.
 #' @author Henri Kauhanen
 #' @seealso \code{\link{kNN.classification}}, \code{\link{pbcm.di}}, \code{\link{pbcm.du}}
 #' @example examples/ex.kNN.confusionmatrix.R
@@ -31,6 +32,7 @@ kNN.confusionmatrix <- function(df,
                                 df.holdout,
                                 k,
                                 ties = "model2",
+                                print_genargs = TRUE,
                                 verbose = TRUE) {
   # positive and negative cases
   positives <- df.holdout[df.holdout$generator=="model1" & !is.na(df.holdout$DeltaGoF), ]
@@ -77,26 +79,26 @@ kNN.confusionmatrix <- function(df,
     }
   }
 
-  if (1==0) {
-  # add genargs to out frame
-  genargs2 <- names(df.holdout)[grep(names(df.holdout), pattern="^model2_")]
-  genargs1 <- names(df.holdout)[grep(names(df.holdout), pattern="^model1_")]
-  if (length(genargs2) != 0) {
-    for (i in length(genargs2):1) {
-      argval <- unique(df.holdout[[genargs2[[i]]]])
-      argval <- argval[!is.na(argval)]
-      out <- cbind(rep(argval, nrow(out)), out)
-      names(out)[1] <- genargs2[i]
+  if (print_genargs) {
+    # add genargs to out frame
+    genargs2 <- names(df.holdout)[grep(names(df.holdout), pattern="^genargs2_")]
+    genargs1 <- names(df.holdout)[grep(names(df.holdout), pattern="^genargs1_")]
+    if (length(genargs2) != 0) {
+      for (i in length(genargs2):1) {
+        argval <- unique(df.holdout[[genargs2[[i]]]])
+        argval <- argval[!is.na(argval)]
+        out <- cbind(rep(argval, nrow(out)), out)
+        names(out)[1] <- genargs2[i]
+      }
     }
-  }
-  if (length(genargs1) != 0) {
-    for (i in length(genargs1):1) {
-      argval <- unique(df.holdout[[genargs1[[i]]]])
-      argval <- argval[!is.na(argval)]
-      out <- cbind(rep(argval, nrow(out)), out)
-      names(out)[1] <- genargs1[i]
+    if (length(genargs1) != 0) {
+      for (i in length(genargs1):1) {
+        argval <- unique(df.holdout[[genargs1[[i]]]])
+        argval <- argval[!is.na(argval)]
+        out <- cbind(rep(argval, nrow(out)), out)
+        names(out)[1] <- genargs1[i]
+      }
     }
-  }
   }
 
   # return

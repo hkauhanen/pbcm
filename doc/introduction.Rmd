@@ -10,8 +10,12 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
+set.seed(222020)
 knitr::opts_chunk$set(
   collapse = TRUE,
+  fig.width = 7,
+  fig.height = 5,
+  out.width = '80%',
   comment = "#>"
 )
 ```
@@ -28,9 +32,9 @@ install.packages("pbcm")
 
 ## Overview of parametric bootstrap cross-fitting
 
-Given two models (henceforth, model 1 and model 2), the PBCM generates synthetic data from each model and cross-fits the models to these synthetic data. The result is two distributions (one with each model as the generator) of the statistic $\Delta GoF = GoF_1 - GoF_2$, where $GoF_i$ is the goodness of fit of model $i$. The model parameters may be determined from empirical data, in which case we talk of the *data-informed* PBCM, or specified a priori, in which case what we have at hand is the *data-uninformed* PBCM.
+Given two models (henceforth, model 1 and model 2), the PBCM generates synthetic data from each model and cross-fits the models to these synthetic data. The result is two distributions (one with each model as the generator) of the statistic $\Delta GoF = GoF_1 - GoF_2$, where $GoF_i$ is the goodness of fit of model $i$. The model parameters may be determined from empirical data, in which case we talk of the *data-informed* PBCM, or specified *a priori*, in which case what we have at hand is the *data-uninformed* PBCM.
 
-The data-informed version of the procedure looks like the following. Given an empirical dataset $D$ (adapted from Wagenmakers et al. 2004):
+The data-informed version of the procedure looks as follows (adapted from Wagenmakers et al. 2004). Given an empirical dataset $D$:
 
 1. Fit both models to $D$, and make note of the empirical value $\Delta GoF_e$.
 1. Repeat for some number of iterations:
@@ -38,8 +42,8 @@ The data-informed version of the procedure looks like the following. Given an em
     1. Fit both models to $D^*$, resulting in two *model realizations*.
     1. Generate synthetic data from the realization of model 1; call these synthetic data $D^*|1$.
     1. Generate synthetic data from the realization of model 2; call these synthetic data $D^*|2$.
-    1. Fit both models to $D^*|1$ and calculate $\Delta GoF | 1$, the difference in goodness of fit given model 1 as the generator.
-    1. Fit both models to $D^*|2$ and calculate $\Delta GoF | 2$, the difference in goodness of fit given model 2 as the generator.
+    1. Fit both models to $D^*|1$ and calculate $\Delta GoF | 1$, the difference in goodness of fit given model 1 is the generator.
+    1. Fit both models to $D^*|2$ and calculate $\Delta GoF | 2$, the difference in goodness of fit given model 2 is the generator.
 1. Examine the distributions $\Delta GoF | 1$ and $\Delta GoF | 2$ and decide on a decision criterion (e.g. $k$ nearest neighbours; see below). Compare the empirical value $\Delta GoF_e$ against this criterion and decide in favour of model 1 or model 2.
 
 The data-uninformed procedure differs from this in that the model realizations are decided by an *a priori* selection of model parameters rather than being estimated from empirical data.
@@ -92,7 +96,7 @@ This function takes a mandatory `model` argument, which is used to pass around m
 Now we're set to actually run the bootstrap:
 
 ```{r pbcm, results='hide'}
-myboot <- pbcm::pbcm.di(data=mockdata, fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun, genfun2=mygenfun, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(p=1), genargs2=list(p=2))
+myboot <- pbcm::pbcm.di(data=mockdata, fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun, genfun2=mygenfun, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(p=1), genargs2=list(p=2), print_genargs=FALSE)
 ```
 
 Here, `args1` and `args2` hold arguments passed to `myfitfun`, while `genargs1` and `genargs2` hold arguments passed to `mygenfun`. Let's take a glimpse at the result:
@@ -150,6 +154,11 @@ To run a data-uninformed PBCM analysis on a particular value of $a$, we can do t
 
 ```{r pbcm.du, results='hide'}
 myboot <- pbcm::pbcm.du(fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun.du, genfun2=mygenfun.du, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(a=1.0, p=1), genargs2=list(a=1.0, p=2))
+```
+
+See that something happened:
+
+```{r pbcm.du.head}
 head(myboot)
 ```
 
@@ -166,11 +175,11 @@ The output of `lapply` is a list, so let's gather this into a data frame for con
 
 ```{r rbind}
 sweep <- do.call(rbind, sweep)
-sweep$parameter <- ifelse(is.na(sweep$model1_a), sweep$model2_a, sweep$model1_a)
+sweep$parameter <- ifelse(is.na(sweep$genargs1_a), sweep$genargs2_a, sweep$genargs1_a)
 ```
 
 Finally, to visualize the results of the sweep:
-```{r sweepvis, out.width='100%'}
+```{r sweepvis}
 g <- ggplot(sweep, aes(x=DeltaGoF, fill=generator)) + geom_density(alpha=0.5) + facet_wrap(.~parameter)
 print(g)
 ```
@@ -178,6 +187,6 @@ print(g)
 
 ## References
 
-Schultheis, H. & Singhaniya, A. (2015) Decision criteria for model comparison using the parametric bootstrap cross-fitting method. *Cognitive Systems Research*, 33, 100–121.
+Schultheis, H. & Singhaniya, A. (2015) Decision criteria for model comparison using the parametric bootstrap cross-fitting method. *Cognitive Systems Research*, 33, 100–121. <https://doi.org/10.1016/j.cogsys.2014.09.003>
 
-Wagenmakers, E.-J., Ratcliff, R., Gomez, P. & Iverson, G. J. (2004) Assessing model mimicry using the parametric bootstrap. *Journal of Mathematical Psychology*, 48(1), 28–50.
+Wagenmakers, E.-J., Ratcliff, R., Gomez, P. & Iverson, G. J. (2004) Assessing model mimicry using the parametric bootstrap. *Journal of Mathematical Psychology*, 48(1), 28–50. <https://doi.org/10.1016/j.jmp.2003.11.004>

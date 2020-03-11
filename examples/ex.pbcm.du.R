@@ -26,7 +26,7 @@ sweep <- lapply(X=seq(from=0.5, to=1.5, by=0.1),
 
 sweep <- do.call(rbind, sweep)
 
-sweep$parameter <- ifelse(is.na(sweep$model1_a), sweep$model2_a, sweep$model1_a)
+sweep$parameter <- ifelse(is.na(sweep$genargs1_a), sweep$genargs2_a, sweep$genargs1_a)
 
 \dontrun{
   library(ggplot2)

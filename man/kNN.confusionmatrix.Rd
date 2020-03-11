@@ -4,7 +4,8 @@
 \alias{kNN.confusionmatrix}
 \title{Confusion Matrices through k Nearest Neighbours Classification}
 \usage{
-kNN.confusionmatrix(df, df.holdout, k, ties = "model2", verbose = TRUE)
+kNN.confusionmatrix(df, df.holdout, k, ties = "model2",
+  print_genargs = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{df}{Data frame output by \code{\link{pbcm.di}} or \code{\link{pbcm.du}}}
@@ -14,6 +15,8 @@ kNN.confusionmatrix(df, df.holdout, k, ties = "model2", verbose = TRUE)
 \item{k}{Number of neighbours to consider in k-NN classification; may be a vector of integers}
 
 \item{ties}{Which way to break ties in k-NN classification (see \code{\link{kNN.classification}})}
+
+\item{print_genargs}{Should the generator arguments of the holdout distribution be included in the output? (See Details)}
 
 \item{verbose}{If \code{TRUE}, prints a progress bar and issues warnings}
 }
@@ -30,7 +33,7 @@ A data frame with the following columns:
 \item{\code{alpha}}{Type I error (false positive) rate; equal to \code{FP} divided by \code{N}}
 \item{\code{beta}}{Type II error (false negative) rate; equal to \code{FN} divided by \code{P}}
 }
-In addition to these columns, each argument that was passed via \code{genargs1} and \code{genargs2} to \code{\link{pbcm.di}} or \code{\link{pbcm.du}} to generate \code{df.holdout} is included as a column of its own.
+In addition to these columns, if \code{print_genargs == TRUE}, each argument that was passed via \code{genargs1} and \code{genargs2} to \code{\link{pbcm.di}} or \code{\link{pbcm.du}} to generate \code{df.holdout} is included as a column of its own.
 }
 \description{
 Computes confusion matrices (one for each value of \eqn{k}) using \eqn{k}-NN classification from the results of two parametric bootstraps, one of these being labelled a holdout set and tested against the other one.

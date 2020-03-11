@@ -4,7 +4,7 @@ Version: 0.1.0
 Date: 2020-01-29
 Author: Henri Kauhanen <henri@henr.in>
 Maintainer: Henri Kauhanen <henri@henr.in>
-Description: Implements both data-informed and data-uninformed versions of the Parametric Bootstrap Cross-fitting Method (PBCM) for binary model selection, as well as some utility functions.
+Description: Implements both data-informed and data-uninformed versions of the Parametric Bootstrap Cross-Fitting Method (PBCM) for binary model selection, as well as some utility functions.
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true

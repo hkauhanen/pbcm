@@ -1,6 +1,10 @@
 ## ----setup, include = FALSE----------------------------------------------
+set.seed(222020)
 knitr::opts_chunk$set(
   collapse = TRUE,
+  fig.width = 7,
+  fig.height = 5,
+  out.width = '80%',
   comment = "#>"
 )
 
@@ -25,7 +29,7 @@ mygenfun <- function(model, p) {
 }
 
 ## ----pbcm, results='hide'------------------------------------------------
-myboot <- pbcm::pbcm.di(data=mockdata, fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun, genfun2=mygenfun, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(p=1), genargs2=list(p=2))
+myboot <- pbcm::pbcm.di(data=mockdata, fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun, genfun2=mygenfun, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(p=1), genargs2=list(p=2), print_genargs=FALSE)
 
 ## ----myboot--------------------------------------------------------------
 head(myboot)
@@ -53,6 +57,8 @@ mygenfun.du <- function(a, p) {
 
 ## ----pbcm.du, results='hide'---------------------------------------------
 myboot <- pbcm::pbcm.du(fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun.du, genfun2=mygenfun.du, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(a=1.0, p=1), genargs2=list(a=1.0, p=2))
+
+## ----pbcm.du.head--------------------------------------------------------
 head(myboot)
 
 ## ----sweep, results='hide'-----------------------------------------------
@@ -63,9 +69,9 @@ sweep <- lapply(X=seq(from=0.5, to=1.5, by=0.1),
 
 ## ----rbind---------------------------------------------------------------
 sweep <- do.call(rbind, sweep)
-sweep$parameter <- ifelse(is.na(sweep$model1_a), sweep$model2_a, sweep$model1_a)
+sweep$parameter <- ifelse(is.na(sweep$genargs1_a), sweep$genargs2_a, sweep$genargs1_a)
 
-## ----sweepvis, out.width='100%'------------------------------------------
+## ----sweepvis------------------------------------------------------------
 g <- ggplot(sweep, aes(x=DeltaGoF, fill=generator)) + geom_density(alpha=0.5) + facet_wrap(.~parameter)
 print(g)
 
