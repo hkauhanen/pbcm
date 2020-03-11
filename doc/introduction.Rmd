@@ -24,10 +24,10 @@ knitr::opts_chunk$set(
 
 ## Installation
 
-You can install the released version of pbcm from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of pbcm from [GitHub](https://github.com/hkauhanen/pbcm) with:
 
 ``` r
-install.packages("pbcm")
+devtools::install_github("hkauhanen/pbcm")
 ```
 
 ## Overview of parametric bootstrap cross-fitting
