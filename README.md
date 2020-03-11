@@ -4,7 +4,7 @@ pbcm is an R package that implements both data-informed and data-uninformed vers
 
 ## Installation
 
-You can install the current version of pbcm from [GitHub](https://github.com/hkauhanen/pbcm) with:
+You can install the current version of pbcm using `devtools`:
 
 ``` r
 devtools::install_github("hkauhanen/pbcm")
