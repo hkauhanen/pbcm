@@ -22,13 +22,37 @@ kNN.classification(df, DeltaGoF.emp, k, ties = "model2",
 A data frame containing the computed distances and decisions, one row per each value of \code{k}
 }
 \description{
-Carry out k Nearest Neighbours (k-NN) classification on the results of a parametric boostrap.
+Carry out \eqn{k} Nearest Neighbours (\eqn{k}-NN) classification on the results of a parametric boostrap.
 }
 \details{
-Calculated the cumulative distance (sum of squared differences) of \code{DeltaGoF.emp} to both \code{DeltaGoF} distributions found in \code{df} (i.e. one with model 1 as generator and one with model 2 as generator), taking into account the \code{k} nearest neighbours only. Decides in favour of model 1 if this cumulative distance to the model 1 distribution is smaller than than the distance to model 2, and vice versa. If distances are equal, decision is made according to the \code{ties} argument.
+Calculates the cumulative distance (sum of squared differences) of \code{DeltaGoF.emp} to both \code{DeltaGoF} distributions found in \code{df} (i.e. one with model 1 as generator and one with model 2 as generator), taking into account the \code{k} nearest neighbours only. Decides in favour of model 1 if this cumulative distance to the model 1 distribution is smaller than than the distance to model 2, and vice versa. If distances are equal, decision is made according to the \code{ties} argument.
+}
+\examples{
+x <- seq(from=0, to=1, length.out=100)
+mockdata <- data.frame(x=x, y=x + rnorm(100, 0, 0.5))
+
+myfitfun <- function(data, p) {
+  res <- nls(y~a*x^p, data, start=list(a=1.1))
+  list(a=coef(res), GoF=deviance(res))
+}
+
+mygenfun <- function(model, p) { 
+  x <- seq(from=0, to=1, length.out=100)
+  y <- model$a*x^p + rnorm(100, 0, 0.5)
+  data.frame(x=x, y=y)
+}
+
+pb <- pbcm.di(data=mockdata, fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun,
+        genfun2=mygenfun, reps=20, args1=list(p=1), args2=list(p=2), 
+        genargs1=list(p=1), genargs2=list(p=2))
+
+emp <- empirical.GoF(mockdata, fun1=myfitfun, fun2=myfitfun,
+                     args1=list(p=1), args2=list(p=2))
+
+kNN.classification(df=pb, DeltaGoF.emp=emp$DeltaGoF, k=c(10, 20))
 }
 \references{
-Schultheis, H. & Singhaniya, A. (2015) Decision criteria for model comparison using the parametric bootstrap cross-fitting method. \emph{Cognitive Systems Research}, 33, 100-121.
+Schultheis, H. & Singhaniya, A. (2015) Decision criteria for model comparison using the parametric bootstrap cross-fitting method. \emph{Cognitive Systems Research}, 33, 100–121. \url{https://doi.org/10.1016/j.cogsys.2014.09.003}
 }
 \seealso{
 \code{\link{empirical.GoF}}, \code{\link{pbcm.di}}, \code{\link{pbcm.du}}

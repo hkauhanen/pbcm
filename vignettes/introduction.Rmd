@@ -1,0 +1,192 @@
+---
+title: "An introduction to pbcm"
+author: "Henri Kauhanen"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{An introduction to pbcm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+set.seed(222020)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width = 7,
+  fig.height = 5,
+  out.width = '80%',
+  comment = "#>"
+)
+```
+
+[pbcm](https://github.com/hkauhanen/pbcm) is an R package that implements both data-informed and data-uninformed versions of the Parametric Bootstrap Cross-fitting Method (PBCM; Wagenmakers et al. 2004), a general-purpose technique for binary model selection. Some auxiliary routines, such as decision through *k* nearest neighbours classification (Schultheis & Singhaniya 2015), are also implemented.
+
+## Installation
+
+You can install the released version of pbcm from [GitHub](https://github.com/hkauhanen/pbcm) with:
+
+``` r
+devtools::install_github("hkauhanen/pbcm")
+```
+
+## Overview of parametric bootstrap cross-fitting
+
+Given two models (henceforth, model 1 and model 2), the PBCM generates synthetic data from each model and cross-fits the models to these synthetic data. The result is two distributions (one with each model as the generator) of the statistic $\Delta GoF = GoF_1 - GoF_2$, where $GoF_i$ is the goodness of fit of model $i$. The model parameters may be determined from empirical data, in which case we talk of the *data-informed* PBCM, or specified *a priori*, in which case what we have at hand is the *data-uninformed* PBCM.
+
+The data-informed version of the procedure looks as follows (adapted from Wagenmakers et al. 2004). Given an empirical dataset $D$:
+
+1. Fit both models to $D$, and make note of the empirical value $\Delta GoF_e$.
+1. Repeat for some number of iterations:
+    1. Form a non-parametric bootstrap $D^*$ of $D$ by sampling data points from $D$ with replacement.
+    1. Fit both models to $D^*$, resulting in two *model realizations*.
+    1. Generate synthetic data from the realization of model 1; call these synthetic data $D^*|1$.
+    1. Generate synthetic data from the realization of model 2; call these synthetic data $D^*|2$.
+    1. Fit both models to $D^*|1$ and calculate $\Delta GoF | 1$, the difference in goodness of fit given model 1 is the generator.
+    1. Fit both models to $D^*|2$ and calculate $\Delta GoF | 2$, the difference in goodness of fit given model 2 is the generator.
+1. Examine the distributions $\Delta GoF | 1$ and $\Delta GoF | 2$ and decide on a decision criterion (e.g. $k$ nearest neighbours; see below). Compare the empirical value $\Delta GoF_e$ against this criterion and decide in favour of model 1 or model 2.
+
+The data-uninformed procedure differs from this in that the model realizations are decided by an *a priori* selection of model parameters rather than being estimated from empirical data.
+
+See Wagenmakers et al. (2004) for further details.
+
+
+## A basic (silly) example
+
+Suppose we have the following data:
+
+```{r mockdata}
+x <- seq(from=0, to=1, length.out=100)
+mockdata <- data.frame(x=x, y=x + rnorm(100, 0, 0.5))
+library(ggplot2)
+g <- ggplot(mockdata, aes(x=x, y=y)) + geom_point()
+print(g)
+```
+
+And suppose we wish to find out which of the following two models best explains these data:
+
+* Model 1: $y = ax + \epsilon$
+* Model 2: $y = ax^2 + \epsilon$
+
+where $\epsilon$ is some Gaussian noise.
+
+The first thing to do is to define our own routine for fitting these models. We could use a dedicated routine for each model, but because of the simplicity of the example and the obvious parallels between the two models, we're in fact going to parameterize a single function. We're going to use R's implementation of nonlinear least squares, `nls`, here:
+
+```{r myfitfun}
+myfitfun <- function(data, p) {
+  res <- nls(y~a*x^p, data, start=list(a=1.1))
+  list(a=coef(res), GoF=deviance(res))
+}
+```
+
+Note that `myfitfun` takes a (mandatory) `data` argument which is used to pass the data the models are fit to, and that it returns a list, one of whose elements holds the goodness of fit (`GoF`).
+
+To generate the parametric bootstrap, we need another function that generates synthetic data based on a model parameterization:
+
+```{r mygenfun}
+mygenfun <- function(model, p) {
+  x <- seq(from=0, to=1, length.out=100)
+  y <- model$a*x^p + rnorm(100, 0, 0.5)
+  data.frame(x=x, y=y)
+}
+```
+
+This function takes a mandatory `model` argument, which is used to pass around model realizations (the output of the `myfitfun` function).
+
+Now we're set to actually run the bootstrap:
+
+```{r pbcm, results='hide'}
+myboot <- pbcm::pbcm.di(data=mockdata, fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun, genfun2=mygenfun, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(p=1), genargs2=list(p=2), print_genargs=FALSE)
+```
+
+Here, `args1` and `args2` hold arguments passed to `myfitfun`, while `genargs1` and `genargs2` hold arguments passed to `mygenfun`. Let's take a glimpse at the result:
+
+```{r myboot}
+head(myboot)
+```
+
+We can easily produce a nice plot of the `DeltaGoF` distributions:
+
+```{r mybootplot}
+g <- ggplot(myboot, aes(x=DeltaGoF, fill=generator)) + geom_density(alpha=0.5)
+print(g)
+```
+
+Since the definition of `DeltaGoF` is `GoF1 - GoF2`, and since we have defined `GoF` as the residual sum of squares of the regression (see our definition of `myfitfun` above), so that smaller is better, we find that model 1 tends to fit data generated by itself better than model 2, and vice versa (as expected). Now, which model is the better explanation of the original `mockdata`? To answer this, we first need the value of `DeltaGoF` for the original data:
+
+```{r empirical}
+emp <- pbcm::empirical.GoF(mockdata, fun1=myfitfun, fun2=myfitfun, args1=list(p=1), args2=list(p=2))
+print(emp)
+```
+
+This suggests that model 1 is the true generator, since the empirical value of `DeltaGoF` would appear to be closer to that distribution. To get a more quantitative angle on this, we can use e.g. *k* nearest neighbours (*k*-NN) classification to decide the issue:
+
+```{r kNN}
+pbcm::kNN.classification(df=myboot, DeltaGoF.emp=emp$DeltaGoF, k=10)
+```
+
+Comparing the empirical value of `DeltaGoF` to its 10 nearest neighbours in both bootstrap distributions, the distance to the model 1 distribution is smaller, hence model 1 is selected.
+
+We can even try different values of *k* to see if that has any effect on the decision:
+
+```{r kNNmultiple}
+pbcm::kNN.classification(df=myboot, DeltaGoF.emp=emp$DeltaGoF, k=c(1, 10, 50, 100))
+```
+
+
+## Data-uninformed bootstrap: a parameter sweep
+
+Suppose we know that parameter values in the region $a \in [0.5, 1.5]$ are particularly empirically meaningful for our two models. We can use the data-uninformed version of PBCM to examine the two models' confusability within this region of the parameter space by conducting a systematic sweep.
+
+This time, the data generating function need not rely on a model but rather on a specific value of the model parameter. Hence we make a new version of this function:
+
+```{r mygenfun2}
+mygenfun.du <- function(a, p) {
+  x <- seq(from=0, to=1, length.out=100)
+  y <- a*x^p + rnorm(100, 0, 0.5)
+  data.frame(x=x, y=y)
+}
+```
+
+The model fitting function, `myfitfun`, needs no modifications.
+
+To run a data-uninformed PBCM analysis on a particular value of $a$, we can do the following:
+
+```{r pbcm.du, results='hide'}
+myboot <- pbcm::pbcm.du(fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun.du, genfun2=mygenfun.du, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(a=1.0, p=1), genargs2=list(a=1.0, p=2))
+```
+
+See that something happened:
+
+```{r pbcm.du.head}
+head(myboot)
+```
+
+A parameter sweep is easy to accomplish using R's `lapply`:
+
+```{r sweep, results='hide'}
+sweep <- lapply(X=seq(from=0.5, to=1.5, by=0.1),
+                FUN=function(X) {
+                  pbcm::pbcm.du(fun1=myfitfun, fun2=myfitfun, genfun1=mygenfun.du, genfun2=mygenfun.du, reps=100, args1=list(p=1), args2=list(p=2), genargs1=list(a=X, p=1), genargs2=list(a=X, p=2))
+                })
+```
+
+The output of `lapply` is a list, so let's gather this into a data frame for convenience and add a column that indicates the value of the $a$ parameter:
+
+```{r rbind}
+sweep <- do.call(rbind, sweep)
+sweep$parameter <- ifelse(is.na(sweep$genargs1_a), sweep$genargs2_a, sweep$genargs1_a)
+```
+
+Finally, to visualize the results of the sweep:
+```{r sweepvis}
+g <- ggplot(sweep, aes(x=DeltaGoF, fill=generator)) + geom_density(alpha=0.5) + facet_wrap(.~parameter)
+print(g)
+```
+
+
+## References
+
+Schultheis, H. & Singhaniya, A. (2015) Decision criteria for model comparison using the parametric bootstrap cross-fitting method. *Cognitive Systems Research*, 33, 100–121. <https://doi.org/10.1016/j.cogsys.2014.09.003>
+
+Wagenmakers, E.-J., Ratcliff, R., Gomez, P. & Iverson, G. J. (2004) Assessing model mimicry using the parametric bootstrap. *Journal of Mathematical Psychology*, 48(1), 28–50. <https://doi.org/10.1016/j.jmp.2003.11.004>
