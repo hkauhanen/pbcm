@@ -4,8 +4,14 @@
 \alias{kNN.confusionmatrix}
 \title{Confusion Matrices through k Nearest Neighbours Classification}
 \usage{
-kNN.confusionmatrix(df, df.holdout, k, ties = "model2",
-  print_genargs = TRUE, verbose = TRUE)
+kNN.confusionmatrix(
+  df,
+  df.holdout,
+  k,
+  ties = "model2",
+  print_genargs = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{df}{Data frame output by \code{\link{pbcm.di}} or \code{\link{pbcm.du}}}

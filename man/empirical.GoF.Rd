@@ -4,8 +4,15 @@
 \alias{empirical.GoF}
 \title{Empirical Goodnesses of Fit}
 \usage{
-empirical.GoF(data, fun1, fun2, args1 = NULL, args2 = NULL,
-  verbose = TRUE, GoFname = "GoF")
+empirical.GoF(
+  data,
+  fun1,
+  fun2,
+  args1 = NULL,
+  args2 = NULL,
+  verbose = TRUE,
+  GoFname = "GoF"
+)
 }
 \arguments{
 \item{data}{Data frame}

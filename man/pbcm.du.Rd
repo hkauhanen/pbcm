@@ -4,9 +4,20 @@
 \alias{pbcm.du}
 \title{Data-uninformed Parametric Bootstrap Cross-fitting}
 \usage{
-pbcm.du(fun1, fun2, genfun1, genfun2, reps, args1 = NULL, args2 = NULL,
-  genargs1 = NULL, genargs2 = NULL, print_genargs = TRUE,
-  verbose = TRUE, GoFname = "GoF")
+pbcm.du(
+  fun1,
+  fun2,
+  genfun1,
+  genfun2,
+  reps,
+  args1 = NULL,
+  args2 = NULL,
+  genargs1 = NULL,
+  genargs2 = NULL,
+  print_genargs = TRUE,
+  verbose = TRUE,
+  GoFname = "GoF"
+)
 }
 \arguments{
 \item{fun1}{First modelling function}

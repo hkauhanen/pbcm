@@ -4,8 +4,7 @@
 \alias{kNN.classification}
 \title{k Nearest Neighbours Classification}
 \usage{
-kNN.classification(df, DeltaGoF.emp, k, ties = "model2",
-  verbose = TRUE)
+kNN.classification(df, DeltaGoF.emp, k, ties = "model2", verbose = TRUE)
 }
 \arguments{
 \item{df}{Results of bootstrap; the output of \code{\link{pbcm.di}} or \code{\link{pbcm.du}}}

@@ -4,3 +4,6 @@
 ^examples$
 ^pbcm.pdf$
 ^vignettes/figure$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

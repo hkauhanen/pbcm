@@ -4,10 +4,22 @@
 \alias{pbcm.di}
 \title{Data-informed Parametric Bootstrap Cross-fitting}
 \usage{
-pbcm.di(data, fun1, fun2, genfun1, genfun2, reps, args1 = NULL,
-  args2 = NULL, genargs1 = NULL, genargs2 = NULL,
-  print_genargs = TRUE, nonparametric_bootstrap = TRUE,
-  verbose = TRUE, GoFname = "GoF")
+pbcm.di(
+  data,
+  fun1,
+  fun2,
+  genfun1,
+  genfun2,
+  reps,
+  args1 = NULL,
+  args2 = NULL,
+  genargs1 = NULL,
+  genargs2 = NULL,
+  print_genargs = TRUE,
+  nonparametric_bootstrap = TRUE,
+  verbose = TRUE,
+  GoFname = "GoF"
+)
 }
 \arguments{
 \item{data}{Data frame}
